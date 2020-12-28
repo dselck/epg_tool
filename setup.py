@@ -4,6 +4,7 @@ install_requires = [
     'pandas',
     'fuzzywuzzy',
     'tmdbsimple',
+    'lxml',
 ]
 
 setup(

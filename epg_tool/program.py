@@ -1,5 +1,5 @@
 from datetime import datetime
-import xml.etree.ElementTree as etree
+from lxml import etree
 
 class program:
 
