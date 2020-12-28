@@ -69,7 +69,7 @@ class enricher_tmdb:
             series_info = self.__get_series_info(tmdb_id)
 
             # If we didn't find anything, return nothing
-            if not series_info or not series_info['seasons']
+            if not series_info or not series_info['seasons']:
                 return None
 
             for season in series_info['seasons']:
@@ -234,7 +234,7 @@ class enricher_tmdb:
         movie_info = self.__get_movie_info(tmdb_id)
 
         if movie_info:
-            if movie_info['overview']
+            if movie_info['overview']:
                 program.description = movie_info['overview']
             if movie_info['title'] and movie_info['release_date']:
                 program.title = '{}_({})'.format(movie_info['title'], movie_info['release_date'].split('-')[0])
