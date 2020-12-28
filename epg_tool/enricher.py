@@ -8,8 +8,6 @@ from fuzzywuzzy import process, fuzz
 
 class enricher_tmdb:
     def __init__(self, cachedir):
-        super self.__init__()
-
         self.cachedir = cachedir
         self.pulled_series = []
         self.pulled_episodes = []
@@ -89,6 +87,9 @@ class enricher_tmdb:
             self.pulled_episodes.append(tmdb_id)
             return episodes
 
+    def __get_movie_info(self, tmdb_id):
+        return tmdb.Movies(tmdb_id).info()
+
     def __find_episode(self, program, episode_info):
         # Do we even have anything to do?
         if not episode_info:
@@ -137,8 +138,15 @@ class enricher_tmdb:
 
         return (program, False)
 
-    def __embed_episode_info(self, program, tmdb_episode):
-        pass
+    def __embed_episode_info(self, program, ep_info):
+        if ep_info['episode_number'] and ep_info['season_number']:
+            program.episode_num = '{}.{}'.format(ep_info['season_number']-1, ep_info['episode_number']-1)
+        return program
+
+    def __embed_stubbed_episode_info(self, program):
+        if not program.episode_num:
+            program.episode_num = '{}.{}{}'.format(program.start.year-1, program.start.month, program.start.day-1)
+        return program
 
     def get_series_id(self, program):
         # Prefer searching by the imdb_id - that will ultimately give the best results
@@ -214,9 +222,24 @@ class enricher_tmdb:
             episode_info = self.__get_episode_info(tmdb_id, force_update=True)
             program, success = self.__find_episode(program, episode_info)
 
+        # Make sure there is some sort of something in there for the episode info
+        program = self.__embed_stubbed_episode_info(program)
+
         # We tried our best now just return what we have :)
         return (program, success)
 
     def update_movie_program(self, program, tmdb_id):
-        return ''
+        # What we really want to ensure is that there is no episode number in the program and ideally we would
+        # want to add the year to the title in the format {title}_({year})
+        movie_info = self.__get_movie_info(tmdb_id)
+
+        if movie_info:
+            if movie_info['overview']
+                program.description = movie_info['overview']
+            if movie_info['title'] and movie_info['release_date']:
+                program.title = '{}_({})'.format(movie_info['title'], movie_info['release_date'].split('-')[0])
+            elif movie_info['title']:
+                program.title = movie_info['title']
+        
+        return program
 
