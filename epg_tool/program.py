@@ -83,6 +83,8 @@ class program:
                 self.imdb_id = epn.text
                 if self.imdb_id.startswith(r'title/'):
                     self.imdb_id = self.imdb_id[6:]
+                if self.imdb_id.startswith('tttt'):
+                    self.imdb_id = self.imdb_id[2:]
 
         # premiere
         if program.find('premiere') is not None:

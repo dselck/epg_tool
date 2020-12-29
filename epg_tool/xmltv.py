@@ -3,6 +3,7 @@ from epg_tool.channel import channel
 from epg_tool.program import program
 import pandas as pd
 
+
 def parse_xml(location):
     channels = {}
     programs = []
@@ -57,3 +58,29 @@ def parse_xml(location):
                                 index=index)
 
     return (programs, channels, df)
+
+
+def transfer_channel_ids(to_channels, to_programs, from_channels):
+    # We need to have both the channels and programs we are transfering information to.
+    # That is because we need to adjust the programs to point to the right channels
+    # after updating their id info.
+
+    ch_mapping = {}
+    for to_key in to_channels.keys():
+        # We will do this one channel at a time
+        to_ch = to_channels[to_key]
+
+        # Search through the 'from_channels' until we find the right lcn
+        for from_ch in from_channels.values():
+            if to_ch.lcn == from_ch.lcn:
+                # Success!
+                ch_mapping[to_ch.id] = from_ch.id
+                to_ch.id = from_ch.id
+                to_channels[to_key] = to_ch
+
+    # Now remap the programs to their possibly new channels
+    for i in range(len(to_programs)):
+        if to_programs[i].channel in ch_mapping:
+            to_programs[i].channel = ch_mapping[to_programs[i].channel]
+
+    return (to_channels, to_programs)

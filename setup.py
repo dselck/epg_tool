@@ -5,6 +5,7 @@ install_requires = [
     'fuzzywuzzy',
     'tmdbsimple',
     'lxml',
+    'python-Levenshtein',
 ]
 
 setup(
