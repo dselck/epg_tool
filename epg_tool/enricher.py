@@ -174,7 +174,7 @@ class enricher_tmdb:
         
         # Now just search by the series_name
         result = self.series_df[self.series_df['series_name'] == program.title]
-        if result:
+        if len(result) > 0:
             # Make sure and put this series in there with the channel id
             new_row = dict(series_name=program.title, channel_id=program.channel, \
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
