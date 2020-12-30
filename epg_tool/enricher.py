@@ -134,7 +134,9 @@ class enricher_tmdb:
             # Check to make sure the highest passes a decent threshold
             if best_match[0] is not None and fuzz.token_sort_ratio(best_match[0].lower(), program.description.lower()) > 85:
                 # Send it back!
-                return self.__embed_episode_info(program, episode_info[idx])
+                idx = descriptions.index(best_match[0])
+                program = self.__embed_episode_info(program, episode_info[idx])
+                return (program, True)
 
         return (program, False)
 
