@@ -6,6 +6,14 @@ import epg_tool
 import tmdbsimple as tmdb
 
 if __name__ == '__main__':
+    # If the environment variables aren't set let's cancel
+    if not os.getenv('DATA_VOLUME') or \
+            not os.getenv('MOVIEDB_KEY') or \
+            not os.getenv('XMLTV_URL') or \
+            not os.getenv('TVHEADEND_URL'):
+        print('Not all environment variables set properly')
+        sys.exit(2)
+
     # Collect the Variables
     data_vol = os.getenv('DATA_VOLUME')
     apikey = os.getenv('MOVIEDB_KEY')
@@ -13,12 +21,6 @@ if __name__ == '__main__':
     internet_url = os.getenv('XMLTV_URL')
     xmltv_save = os.path.join(data_vol, 'xmltv.xml')
     tvheadend_url = os.getenv('TVHEADEND_URL')
-
-
-    if not apikey or not internet_url or not tvheadend_url or not data_vol:
-        print('Not all environment variables set properly')
-        sys.exit(2)
-
 
     def job():
         # Do some setup
