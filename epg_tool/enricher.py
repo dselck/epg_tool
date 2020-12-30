@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import datetime
 import pandas as pd
 import tmdbsimple as tmdb
@@ -43,7 +44,11 @@ class enricher_tmdb:
             with open(filepath) as json_file:
                 return json.load(json_file)
         else:
-            result = tmdb.TV(tmdb_id).info()
+            try:
+                result = tmdb.TV(tmdb_id).info()
+            except:
+                time.sleep(100)
+                result = tmdb.TV(tmdb_id).info()
 
             # If we didn't find anything return nothing
             if not result:
@@ -73,7 +78,11 @@ class enricher_tmdb:
                 return None
 
             for season in series_info['seasons']:
-                result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
+                try:
+                    result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
+                except:
+                    time.sleep(100)
+                    result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
                 episodes += (result['episodes'])
 
             if not episodes:
@@ -88,7 +97,13 @@ class enricher_tmdb:
             return episodes
 
     def __get_movie_info(self, tmdb_id):
-        return tmdb.Movies(tmdb_id).info()
+        try:
+            result = tmdb.Movies(tmdb_id).info()
+        except:
+            time.sleep(100)
+            result = tmdb.Movies(tmdb_id).info()
+
+        return result
 
     def __find_episode(self, program, episode_info):
         # Do we even have anything to do?
@@ -160,7 +175,11 @@ class enricher_tmdb:
             if len(result['tmdb_id']) > 0:
                 return result['tmdb_id'][0]
             else:
-                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+                try:
+                    result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+                except:
+                    time.sleep(100)
+                    result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
                 # First look for the TV show
                 if result['tv_results']:
                     return result['tv_results'][0]['id']
@@ -185,7 +204,12 @@ class enricher_tmdb:
             return result['tmdb_id'][0]
 
         # In this case we haven't seen it before, so let's search tmdb - doing a series search
-        result = tmdb.Search().tv(query=program.title, include_adult=False)
+        try:
+            result = tmdb.Search().tv(query=program.title, include_adult=False)
+        except:
+            time.sleep(100)
+            result = tmdb.Search().tv(query=program.title, include_adult=False)
+
         if result['results']:
             new_row = dict(series_name=program.title, channel_id=program.channel, \
                            imdb_id=program.imdb_id, tmdb_id=result['results'][0]['id'])
@@ -198,12 +222,22 @@ class enricher_tmdb:
 
     def get_movie_id(self, program):
         if program.imdb_id:
-            result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+            try:
+                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+            except:
+                time.sleep(100)
+                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+
             if result['movie_results']:
                 return result['movie_results'][0]['id']
 
         # We need to search for this one
-        result = tmdb.Search().movie(query=program.title, include_adult=False)
+        try:
+            result = tmdb.Search().movie(query=program.title, include_adult=False)
+        except:
+            time.sleep(100)
+            result = tmdb.Search().movie(query=program.title, include_adult=False)
+        
         if result['results']:
             return result['results'][0]['id']
 
