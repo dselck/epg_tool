@@ -175,7 +175,7 @@ def match_headend_to_internet(tvhd_programs, tvhd_channels, internet_programs, i
     multiple_title_list = []
     channel_timediff = {}
     for ch in tvhd_channels:
-        channel_timediff[ch] = []
+        channel_timediff[ch.id] = []
 
 
     for i in range(len(tvhd_programs)):
@@ -218,7 +218,7 @@ def match_headend_to_internet(tvhd_programs, tvhd_channels, internet_programs, i
             # with this one, store the time differential so that we can do a better job with
             # the ones where we had multiple titles.
             time_diff = (p.start - internet_programs[int_prog_idx].start).total_seconds()
-            channel_timediff[p.channel].append(time_diff)
+            channel_timediff[p.channel.id].append(time_diff)
 
             tvhd_programs[i].title = internet_programs[int_prog_idx].title
             tvhd_programs[i].sub_title = internet_programs[int_prog_idx].sub_title
@@ -232,11 +232,11 @@ def match_headend_to_internet(tvhd_programs, tvhd_channels, internet_programs, i
 
      # Calculate some median time differences
     for ch in tvhd_channels.keys():
-        time_diff_list = channel_timediff[ch]
+        time_diff_list = channel_timediff[ch.id]
         if len(time_diff_list) > 0:
-            channel_timediff[ch] = timedelta(seconds=statistics.median(time_diff_list))
+            channel_timediff[ch.id] = timedelta(seconds=statistics.median(time_diff_list))
         else:
-            channel_timediff[ch] = timedelta(seconds=0)
+            channel_timediff[ch.id] = timedelta(seconds=0)
 
     # We finished the first pass, now go through those with back-to-back airings
     for i in multiple_title_list:
@@ -246,7 +246,7 @@ def match_headend_to_internet(tvhd_programs, tvhd_channels, internet_programs, i
             # This channel isn't in the internet file
             continue
 
-        new_start = p.start - channel_timediff[p.channel]
+        new_start = p.start - channel_timediff[p.channel.id]
         td2 = timedelta(minutes=10)
         df_window = internet_df.loc[(new_start-td2).strftime("%Y-%m-%d %H:%M:%S"):(new_start+td2).strftime("%Y-%m-%d %H:%M:%S")]
 
