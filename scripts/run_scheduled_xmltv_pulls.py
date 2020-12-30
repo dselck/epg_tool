@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+import time
 import schedule
 import epg_tool
 import tmdbsimple as tmdb
@@ -52,7 +53,7 @@ if __name__ == '__main__':
         epg_tool.write_xml(tvhd_programs, tvhd_channels, xmltv_save)
 
     schedule.every().day.at("02:00").do(job)
-    schedule.every().dat.at("20:00").do(job)
+    schedule.every().day.at("20:00").do(job)
 
     while True:
         schedule.run_pending()
