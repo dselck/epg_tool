@@ -1,4 +1,5 @@
 from lxml import etree
+from datetime import timedelta
 from epg_tool.channel import channel
 from epg_tool.program import program
 import pandas as pd
