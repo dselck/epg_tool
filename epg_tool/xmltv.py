@@ -59,6 +59,7 @@ def parse_xml(location):
                                 columns=['Start_Time', 'Stop_Time', 'Title', 'Subtitle', 'Channel', \
                                         'Description', 'Episode', 'Is_Movie', 'Array_Index'], \
                                 index=index)
+    df.sort_index(inplace=True)
 
     return (programs, channels, df)
 
