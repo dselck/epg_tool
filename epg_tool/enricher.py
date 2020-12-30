@@ -157,7 +157,7 @@ class enricher_tmdb:
             # Check first in pandas to see if we already queried that
             result = self.series_df[self.series_df['imdb_id'] == program.imdb_id]
 
-            if result:
+            if len(result['tmdb_id'] > 0:
                 return result['tmdb_id'][0]
             else:
                 result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
@@ -171,12 +171,12 @@ class enricher_tmdb:
         # Now search in the dataframe by the series_name and channel_id
         result = self.series_df[(self.series_df['series_name'] == program.title) & \
                                 (self.series_df['channel_id'] == program.channel)]
-        if len(result) == 1:
+        if len(result['tmdb_id']) > 0:
             return result['tmdb_id'][0]
         
         # Now just search by the series_name
         result = self.series_df[self.series_df['series_name'] == program.title]
-        if len(result) > 0:
+        if len(result['tmdb_id']) > 0:
             # Make sure and put this series in there with the channel id
             new_row = dict(series_name=program.title, channel_id=program.channel, \
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
