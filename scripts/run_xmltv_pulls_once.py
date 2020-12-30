@@ -33,16 +33,16 @@ print('Finished Pulling Files')
 
 # Fix the channels for tvhd to match internet
 print('Fixing Channels')
-tvhd_channels = epg_tool.transfer_channel_ids(tvhd_channels, tvhd_programs, internet_channels)
+tvhd_channels, tvhd_programs  = epg_tool.transfer_channel_ids(tvhd_channels, tvhd_programs, internet_channels)
 print('Finished Fixing Channels')
 
 # Pull the data from the internet programs (bad times) to the local times
 print('Adding internet xmltv data to EIT data')
-tvhd_programs, tvhd_channels = epg_tool.match_headend_to_internet(tvhd_programs,
-                                                                tvhd_channels,
-                                                                internet_programs,
-                                                                internet_channels,
-                                                                internet_df)
+tvhd_programs = epg_tool.match_headend_to_internet(tvhd_programs,
+                                                   tvhd_channels,
+                                                   internet_programs,
+                                                   internet_channels,
+                                                   internet_df)
 print('Finished adding internet xmltv data to EIT data')
 
 # Now we can enrich all of the data!
