@@ -144,8 +144,8 @@ class enricher_tmdb:
         return program
 
     def __embed_stubbed_episode_info(self, program):
-        if not program.episode_num:
-            program.episode_num = '{}.{}{}'.format(program.start.year-1, program.start.month, program.start.day-1)
+        if program.episode_num is None:
+            program.episode_num = '{}.{}{}{}'.format(program.start.year-1, program.start.month, program.start.day, program.start.minute-1)
         return program
 
     def get_series_id(self, program):
@@ -205,13 +205,22 @@ class enricher_tmdb:
         if result['results']:
             return result['results'][0]['id']
 
-    def update_series_program(self, program, tmdb_id):
+    def update_series_program(self, program, tmdb_id=None):
+        if tmdb_id is None:
+            # We need to find it ourselves
+            tmdb_id = self.get_series_id(program)
+        
+        if tmdb_id is None:
+            return (program, False)
+
         # First update the title and categories to make sure everything is clean
         series_info = self.__get_series_info(tmdb_id)
-        program.title = series_info['name']
-        program.categories = []
-        for cat in series_info['genres']:
-            program.categories.append(cat['name'])
+        if series_info['name']:
+            program.title = series_info['name']
+        if series_info['genres']:
+            program.categories = []
+            for cat in series_info['genres']:
+                program.categories.append(cat['name'])
 
         # Then try and find the episode. First get the episode information.
         episode_info = self.__get_episode_info(tmdb_id)
@@ -228,7 +237,14 @@ class enricher_tmdb:
         # We tried our best now just return what we have :)
         return (program, success)
 
-    def update_movie_program(self, program, tmdb_id):
+    def update_movie_program(self, program, tmdb_id=None):
+        if tmdb_id is None:
+            # We need to find it ourselves
+            tmdb_id = self.get_movie_id(program)
+
+        if tmdb_id is None:
+            return (program, False)
+
         # What we really want to ensure is that there is no episode number in the program and ideally we would
         # want to add the year to the title in the format {title}_({year})
         movie_info = self.__get_movie_info(tmdb_id)
@@ -240,6 +256,9 @@ class enricher_tmdb:
                 program.title = '{}_({})'.format(movie_info['title'], movie_info['release_date'].split('-')[0])
             elif movie_info['title']:
                 program.title = movie_info['title']
+            if movie_info['genres']:
+                program.categories = []
+                for cat in movie_info['genres']:
+                    program.categories.append(cat['name'])
         
         return program
-

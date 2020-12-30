@@ -6,6 +6,7 @@ install_requires = [
     'tmdbsimple',
     'lxml',
     'python-Levenshtein',
+    'schedule',
 ]
 
 setup(
@@ -19,4 +20,5 @@ setup(
     packages=['epg_tool'],
     python_requires='>3.4',
     install_requires=install_requires,
+    scripts=['scripts/run_scheduled_xmltv_pulls.py']
 )
