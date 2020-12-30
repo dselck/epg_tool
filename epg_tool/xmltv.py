@@ -115,6 +115,7 @@ def __array_has_data(array):
 
     return output
 
+
 def __get_matching_index(program, df, search_type):
     if df is not None and len(df) != 0:
         search = None
