@@ -178,7 +178,7 @@ class enricher_tmdb:
             # Make sure and put this series in there with the channel id
             new_row = dict(series_name=program.title, channel_id=program.channel, \
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
-            to_app = pd.DataFrame(new_row, columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
+            to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
             return result['tmdb_id']
 
@@ -187,7 +187,7 @@ class enricher_tmdb:
         if result['results']:
             new_row = dict(series_name=program.title, channel_id=program.channel, \
                            imdb_id=program.imdb_id, tmdb_id=result['results'][0]['id'])
-            to_app = pd.DataFrame(new_row, columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
+            to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
             return result['results'][0]['id']
 
@@ -262,3 +262,7 @@ class enricher_tmdb:
                     program.categories.append(cat['name'])
         
         return program
+
+    def write_series_csv(self):
+        filepath = os.path.join(self.cachedir, 'show_dataframe.csv')
+        self.series_df.to_csv(filepath, index=False)

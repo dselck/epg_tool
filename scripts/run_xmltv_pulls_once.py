@@ -48,12 +48,13 @@ print('Finished adding internet xmltv data to EIT data')
 # Now we can enrich all of the data!
 print('Enriching data')
 for i in range(len(tvhd_programs)):
-    if i % 500 == 0:
+    if i % 100 == 0:
         print('Finished enriching {} of {} programs'.format(i, len(tvhd_programs)))
     if tvhd_df.iloc[i].Is_Movie:
         tvhd_programs[i] = enricher.update_movie_program(tvhd_programs[i])
     else:
         tvhd_programs[i] = enricher.update_series_program(tvhd_programs[i])
+enricher.write_series_csv()
 print('Finished enriching data')
 
 
