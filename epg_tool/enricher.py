@@ -60,8 +60,8 @@ class enricher_tmdb:
     def __get_episode_info(self, tmdb_id, force_update=False):
         filepath = os.path.join(self.cachedir, '{}_episode_info.json'.format(tmdb_id))
 
-        if os.path.isfile(filepath) and not force_update or \
-                os.path.isfile(filepath) and tmdb_id in self.pulled_episodes:
+        if (os.path.isfile(filepath) and not force_update) or \
+                (os.path.isfile(filepath) and tmdb_id in self.pulled_episodes):
             with open(filepath) as json_file:
                 return json.load(json_file)
         else:
@@ -158,6 +158,7 @@ class enricher_tmdb:
             result = self.series_df[self.series_df['imdb_id'] == program.imdb_id]
 
             if result:
+                print(result['tmdb_id'])
                 return result['tmdb_id']
             else:
                 result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
@@ -172,6 +173,7 @@ class enricher_tmdb:
         result = self.series_df[(self.series_df['series_name'] == program.title) & \
                                 (self.series_df['channel_id'] == program.channel)]
         if len(result) == 1:
+            print(result['tmdb_id'])
             return result['tmdb_id']
         
         # Now just search by the series_name
@@ -182,6 +184,7 @@ class enricher_tmdb:
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
             to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
+            print(result['tmdb_id'])
             return result['tmdb_id']
 
         # In this case we haven't seen it before, so let's search tmdb - doing a series search
@@ -191,6 +194,7 @@ class enricher_tmdb:
                            imdb_id=program.imdb_id, tmdb_id=result['results'][0]['id'])
             to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
+            print(result['results'][0]['id'])
             return result['results'][0]['id']
 
         # We didn't find a single thing! return None - this will have to be handled appropriately :)
@@ -229,7 +233,7 @@ class enricher_tmdb:
         program, success = self.__find_episode(program, episode_info)
 
         # If we didn't have any success then maybe we should update things!
-        if not success & tmdb_id not in self.pulled_episodes:
+        if not success and tmdb_id not in self.pulled_episodes:
             episode_info = self.__get_episode_info(tmdb_id, force_update=True)
             program, success = self.__find_episode(program, episode_info)
 
