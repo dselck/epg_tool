@@ -1,7 +1,9 @@
 from lxml import etree
+import statistics
 from datetime import timedelta
 from epg_tool.channel import channel
 from epg_tool.program import program
+from fuzzywuzzy import process, fuzz
 import pandas as pd
 
 
@@ -104,6 +106,14 @@ def transfer_channel_ids(to_channels, to_programs, from_channels):
     return (return_channels, to_programs)
 
 
+def __array_has_data(array):
+    output = False # Default to this
+    for element in array:
+        if element is not None:
+            output = True
+
+    return output
+
 def __get_matching_index(program, df, search_type):
     if df is not None and len(df) != 0:
         search = None
@@ -117,7 +127,7 @@ def __get_matching_index(program, df, search_type):
             return None
 
         # Do everything with fuzzywuzzy to catch all the edge cases and such
-        if array_has_data(df[search_type]) and search is not None:
+        if __array_has_data(df[search_type]) and search is not None:
             # Find the best match in the data provided
             best_match = process.extractOne(search, df[search_type])
 
@@ -157,7 +167,7 @@ def __get_matching_index(program, df, search_type):
                         # If we arrived here we did a title search, and got more than one title. The
                         # only way we would be able to deconvolute this is by the description.
                         # Recursion is your friend here :)
-                        desc_idx = get_matching_index(program, episode, 'Description')
+                        desc_idx = __get_matching_index(program, episode, 'Description')
                         if desc_idx is None:
                             return desc_idx
                         else:
