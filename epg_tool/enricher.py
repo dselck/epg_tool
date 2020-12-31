@@ -199,8 +199,7 @@ class enricher_tmdb:
         result = self.series_df[(self.series_df['series_name'] == program.title) & \
                                 (self.series_df['channel_id'] == program.channel)]
         if len(result['tmdb_id']) > 0:
-            print(result['tmdb_id'])
-            return result['tmdb_id'][0]
+            return result['tmdb_id'].values[0]
         
         # Now just search by the series_name
         result = self.series_df[self.series_df['series_name'] == program.title]
@@ -210,7 +209,7 @@ class enricher_tmdb:
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
             to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
-            return result['tmdb_id'][0]
+            return result['tmdb_id'].values[0]
 
         # In this case we haven't seen it before, so let's search tmdb - doing a series search
         try:
