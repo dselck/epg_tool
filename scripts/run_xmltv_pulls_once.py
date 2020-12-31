@@ -24,6 +24,9 @@ tvheadend_url = os.getenv('TVHEADEND_URL')
 
 # Do some setup
 class SessionTimeoutFix(requests.Session):
+    def __init__(self):
+        super().__init__()
+
     def request(self, method, url, **kwargs):
         _ = kwargs.pop('timeout')
         return super().request(self, method, url, **kwargs, timeout=10)
