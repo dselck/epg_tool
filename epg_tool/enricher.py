@@ -181,6 +181,7 @@ class enricher_tmdb:
             result = self.series_df[self.series_df['imdb_id'] == program.imdb_id]
 
             if len(result['tmdb_id']) > 0:
+                print('part 1, id = {}'.format(result))
                 return result['tmdb_id'].values[0]
             else:
                 try:
@@ -190,6 +191,7 @@ class enricher_tmdb:
                     result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
                 # First look for the TV show
                 if result['tv_results']:
+                    print('part 2, id = {}'.format(result))
                     return result['tv_results'][0]['id']
                 # We are searching for a TV-Show and just found out it is a movie. Return None!
                 elif result['movie_results']:                    
@@ -198,7 +200,8 @@ class enricher_tmdb:
         # Now search in the dataframe by the series_name and channel_id
         result = self.series_df[(self.series_df['series_name'] == program.title) & \
                                 (self.series_df['channel_id'] == program.channel)]
-        if len(result['tmdb_id']) > 0:
+        if len(result['tmdb_id']) == 1:
+            print('part 3, id = {}'.format(result))
             return result['tmdb_id'].values[0]
         
         # Now just search by the series_name
@@ -209,6 +212,7 @@ class enricher_tmdb:
                            imdb_id=program.imdb_id, tmdb_id=result['tmdb_id'])
             to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
+            print('part 4, id = {}'.format(result))
             return result['tmdb_id'].values[0]
 
         # In this case we haven't seen it before, so let's search tmdb - doing a series search
@@ -223,6 +227,7 @@ class enricher_tmdb:
                            imdb_id=program.imdb_id, tmdb_id=result['results'][0]['id'])
             to_app = pd.DataFrame([new_row], columns=['series_name', 'channel_id', 'imdb_id', 'tmdb_id'])
             self.series_df = self.series_df.append(to_app, ignore_index=True, sort=False)
+            print('part 5, id = {}'.format(result))
             return result['results'][0]['id']
 
         # We didn't find a single thing! return None - this will have to be handled appropriately :)
