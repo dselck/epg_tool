@@ -117,11 +117,13 @@ class enricher_tmdb:
             sub_titles.append(ep['name'])
             descriptions.append(ep['overview'])
         
+        replace_subitle = True
         # Now do a search by the sub_title (episode name)
         if program.sub_title is not None:
             # Some episodes are really multiple episodes separated by a /
             if '/' in program.sub_title:
                 sub_t = program.sub_title.split('/')[0]
+                replace_subitle = False
             else:
                 sub_t = program.sub_title
             
@@ -132,6 +134,8 @@ class enricher_tmdb:
                 # We have found our winner!
                 idx = sub_titles.index(best_match[0])
                 program = self.__embed_episode_info(program, episode_info[idx])
+                if replace_subitle:
+                    program.sub_title = episode_info[idx]['name']
                 return (program, True)
 
             # Sometimes EIT data happens to use the "description" of the episode as the subtitle...
@@ -141,6 +145,8 @@ class enricher_tmdb:
                 # We have found our winner!
                 idx = descriptions.index(best_match[0])
                 program = self.__embed_episode_info(program, episode_info[idx])
+                if replace_subitle:
+                    program.sub_title = episode_info[idx]['name']
                 return (program, True)
 
         # If we made it to this point try looking by the description
@@ -151,6 +157,8 @@ class enricher_tmdb:
                 # Send it back!
                 idx = descriptions.index(best_match[0])
                 program = self.__embed_episode_info(program, episode_info[idx])
+                if replace_subitle:
+                    program.sub_title = episode_info[idx]['name']
                 return (program, True)
 
         return (program, False)
