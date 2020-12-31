@@ -181,7 +181,7 @@ class enricher_tmdb:
             result = self.series_df[self.series_df['imdb_id'] == program.imdb_id]
 
             if len(result['tmdb_id']) > 0:
-                return result['tmdb_id'][0]
+                return result['tmdb_id'].values[0]
             else:
                 try:
                     result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
