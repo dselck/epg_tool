@@ -3,7 +3,7 @@ from setuptools import setup
 install_requires = [
     'pandas',
     'fuzzywuzzy',
-    'tmdbsimple',
+    'git+https://github.com/dselck/tmdbsimple.git',
     'lxml',
     'python-Levenshtein',
     'schedule',

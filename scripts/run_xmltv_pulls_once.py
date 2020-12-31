@@ -23,16 +23,7 @@ xmltv_save = os.path.join(data_vol, 'xmltv.xml')
 tvheadend_url = os.getenv('TVHEADEND_URL')
 
 # Do some setup
-class SessionTimeoutFix(requests.Session):
-    def __init__(self):
-        super().__init__()
-
-    def request(self, method, url, **kwargs):
-        _ = kwargs.pop('timeout')
-        return super().request(self, method, url, **kwargs, timeout=10)
-
 tmdb.API_KEY = apikey
-tmdb.REQUESTS_SESSION = SessionTimeoutFix
 enricher = epg_tool.enricher(cachedir)
 
 # Pull the files that we are going to need
