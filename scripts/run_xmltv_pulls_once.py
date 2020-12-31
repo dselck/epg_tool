@@ -24,9 +24,9 @@ tvheadend_url = os.getenv('TVHEADEND_URL')
 
 # Do some setup
 class SessionTimeoutFix(requests.Session):
-    def request(self, *args, **kwargs):
+    def request(self, method, url, **kwargs):
         _ = kwargs.pop('timeout')
-        return super().request(*args, **kwargs, timeout=10)
+        return super().request(self, method, url, **kwargs, timeout=10)
 
 tmdb.API_KEY = apikey
 tmdb.REQUESTS_SESSION = SessionTimeoutFix
@@ -44,13 +44,13 @@ tvhd_channels, tvhd_programs  = epg_tool.transfer_channel_ids(tvhd_channels, tvh
 print('Finished Fixing Channels')
 
 # Pull the data from the internet programs (bad times) to the local times
-print('Adding internet xmltv data to EIT data')
-tvhd_programs = epg_tool.match_headend_to_internet(tvhd_programs,
-                                                   tvhd_channels,
-                                                   internet_programs,
-                                                   internet_channels,
-                                                   internet_df)
-print('Finished adding internet xmltv data to EIT data')
+#print('Adding internet xmltv data to EIT data')
+#tvhd_programs = epg_tool.match_headend_to_internet(tvhd_programs,
+#                                                   tvhd_channels,
+#                                                   internet_programs,
+#                                                   internet_channels,
+#                                                   internet_df)
+#print('Finished adding internet xmltv data to EIT data')
 
 # Now we can enrich all of the data!
 print('Enriching data')
