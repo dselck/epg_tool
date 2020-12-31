@@ -242,9 +242,6 @@ class enricher_tmdb:
         program, success = self.__find_episode(program, episode_info)
 
         # If we didn't have any success then maybe we should update things!
-        print('success = {}'.format(success))
-        print('tmdb_id = {}'.format(tmdb_id))
-        print('pulled_episodes = {}'.format(self.pulled_episodes))
         if not success and tmdb_id not in self.pulled_episodes:
             episode_info = self.__get_episode_info(tmdb_id, force_update=True)
             program, success = self.__find_episode(program, episode_info)
