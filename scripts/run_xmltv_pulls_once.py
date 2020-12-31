@@ -25,8 +25,7 @@ tvheadend_url = os.getenv('TVHEADEND_URL')
 # Do some setup
 class SessionTimeoutFix(requests.Session):
     def request(self, *args, **kwargs):
-        print("Fix called")
-        timeout = kwargs.pop('timeout', 2)
+        _ = kwargs.pop('timeout')
         return super().request(*args, **kwargs, timeout=10)
 
 tmdb.API_KEY = apikey
