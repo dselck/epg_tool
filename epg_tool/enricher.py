@@ -47,7 +47,7 @@ class enricher_tmdb:
             try:
                 result = tmdb.TV(tmdb_id).info()
             except:
-                time.sleep(100)
+                time.sleep(10)
                 result = tmdb.TV(tmdb_id).info()
 
             # If we didn't find anything return nothing
@@ -81,7 +81,7 @@ class enricher_tmdb:
                 try:
                     result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
                 except:
-                    time.sleep(100)
+                    time.sleep(10)
                     result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
                 episodes += (result['episodes'])
 
@@ -100,7 +100,7 @@ class enricher_tmdb:
         try:
             result = tmdb.Movies(tmdb_id).info()
         except:
-            time.sleep(100)
+            time.sleep(10)
             result = tmdb.Movies(tmdb_id).info()
 
         return result
@@ -187,7 +187,7 @@ class enricher_tmdb:
                 try:
                     result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
                 except:
-                    time.sleep(100)
+                    time.sleep(10)
                     result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
                 # First look for the TV show
                 if result['tv_results']:
@@ -219,7 +219,7 @@ class enricher_tmdb:
         try:
             result = tmdb.Search().tv(query=program.title, include_adult=False)
         except:
-            time.sleep(100)
+            time.sleep(10)
             result = tmdb.Search().tv(query=program.title, include_adult=False)
 
         if result['results']:
@@ -238,7 +238,7 @@ class enricher_tmdb:
             try:
                 result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
             except:
-                time.sleep(100)
+                time.sleep(10)
                 result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
 
             if result['movie_results']:
@@ -248,7 +248,7 @@ class enricher_tmdb:
         try:
             result = tmdb.Search().movie(query=program.title, include_adult=False)
         except:
-            time.sleep(100)
+            time.sleep(10)
             result = tmdb.Search().movie(query=program.title, include_adult=False)
         
         if result['results']:
