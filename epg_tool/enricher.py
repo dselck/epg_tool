@@ -199,6 +199,7 @@ class enricher_tmdb:
         result = self.series_df[(self.series_df['series_name'] == program.title) & \
                                 (self.series_df['channel_id'] == program.channel)]
         if len(result['tmdb_id']) > 0:
+            print(result['tmdb_id'])
             return result['tmdb_id'][0]
         
         # Now just search by the series_name
