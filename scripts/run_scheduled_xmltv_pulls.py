@@ -69,7 +69,7 @@ if __name__ == '__main__':
                 if success:
                     successes += 1
                 idx += 1
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ReadTimeout:
                 # We ran into a timeout - something with the web not working currently...
                 time.sleep(30)
         enricher.write_series_csv()
