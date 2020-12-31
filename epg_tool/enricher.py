@@ -44,11 +44,7 @@ class enricher_tmdb:
             with open(filepath) as json_file:
                 return json.load(json_file)
         else:
-            try:
-                result = tmdb.TV(tmdb_id).info()
-            except:
-                time.sleep(10)
-                result = tmdb.TV(tmdb_id).info()
+            result = tmdb.TV(tmdb_id).info()
 
             # If we didn't find anything return nothing
             if not result:
@@ -78,11 +74,7 @@ class enricher_tmdb:
                 return None
 
             for season in series_info['seasons']:
-                try:
-                    result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
-                except:
-                    time.sleep(10)
-                    result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
+                result = tmdb.TV_Seasons(tmdb_id, season['season_number']).info()
                 episodes += (result['episodes'])
 
             if not episodes:
@@ -97,12 +89,7 @@ class enricher_tmdb:
             return episodes
 
     def __get_movie_info(self, tmdb_id):
-        try:
-            result = tmdb.Movies(tmdb_id).info()
-        except:
-            time.sleep(10)
-            result = tmdb.Movies(tmdb_id).info()
-
+        result = tmdb.Movies(tmdb_id).info()
         return result
 
     def __find_episode(self, program, episode_info):
@@ -183,11 +170,7 @@ class enricher_tmdb:
             if len(result['tmdb_id']) > 0:
                 return result['tmdb_id'].values[0]
             else:
-                try:
-                    result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
-                except:
-                    time.sleep(10)
-                    result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
                 # First look for the TV show
                 if result['tv_results']:
                     return result['tv_results'][0]['id']
@@ -212,11 +195,7 @@ class enricher_tmdb:
             return result['tmdb_id'].values[0]
 
         # In this case we haven't seen it before, so let's search tmdb - doing a series search
-        try:
-            result = tmdb.Search().tv(query=program.title, include_adult=False)
-        except:
-            time.sleep(10)
-            result = tmdb.Search().tv(query=program.title, include_adult=False)
+        result = tmdb.Search().tv(query=program.title, include_adult=False)
 
         if result['results']:
             new_row = dict(series_name=program.title, channel_id=program.channel, \
@@ -230,21 +209,13 @@ class enricher_tmdb:
 
     def get_movie_id(self, program):
         if program.imdb_id:
-            try:
-                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
-            except:
-                time.sleep(10)
-                result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
+            result = tmdb.Find(program.imdb_id).info(external_source="imdb_id")
 
             if result['movie_results']:
                 return result['movie_results'][0]['id']
 
         # We need to search for this one
-        try:
-            result = tmdb.Search().movie(query=program.title, include_adult=False)
-        except:
-            time.sleep(10)
-            result = tmdb.Search().movie(query=program.title, include_adult=False)
+        result = tmdb.Search().movie(query=program.title, include_adult=False)
         
         if result['results']:
             return result['results'][0]['id']
@@ -308,7 +279,7 @@ class enricher_tmdb:
                 for cat in movie_info['genres']:
                     program.categories.append(cat['name'])
         
-        return program
+        return (program, True)
 
     def write_series_csv(self):
         filepath = os.path.join(self.cachedir, 'show_dataframe.csv')

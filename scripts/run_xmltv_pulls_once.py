@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import epg_tool
+import requests
 import tmdbsimple as tmdb
 
 # If the environment variables aren't set let's cancel
@@ -22,7 +23,14 @@ xmltv_save = os.path.join(data_vol, 'xmltv.xml')
 tvheadend_url = os.getenv('TVHEADEND_URL')
 
 # Do some setup
+class SessionTimeoutFix(requests.Session):
+    def request(self, *args, **kwargs):
+        print("Fix called")
+        timeout = kwargs.pop('timeout', 2)
+        return super().request(*args, **kwargs, timeout=10)
+
 tmdb.API_KEY = apikey
+tmdb.REQUESTS_SESSION = SessionTimeoutFix
 enricher = epg_tool.enricher(cachedir)
 
 # Pull the files that we are going to need
@@ -47,15 +55,24 @@ print('Finished adding internet xmltv data to EIT data')
 
 # Now we can enrich all of the data!
 print('Enriching data')
-for i in range(len(tvhd_programs)):
-    if i % 100 == 0:
-        print('Finished enriching {} of {} programs'.format(i, len(tvhd_programs)))
-    if tvhd_df.iloc[i].Is_Movie:
-        tvhd_programs[i] = enricher.update_movie_program(tvhd_programs[i])
-    else:
-        tvhd_programs[i] = enricher.update_series_program(tvhd_programs[i])
+idx = 0
+successes = 0
+while idx < len(tvhd_programs):
+    if idx % 100 == 0:
+        print('Finished enriching {} of {} programs'.format(idx, len(tvhd_programs)))
+    try:
+        if tvhd_df.iloc[idx].Is_Movie:
+            tvhd_programs[idx], success = enricher.update_movie_program(tvhd_programs[idx])
+        else:
+            tvhd_programs[idx], success = enricher.update_series_program(tvhd_programs[idx])
+        if success:
+            successes += 1
+        idx += 1
+    except requests.exceptions.ConnectionError:
+        # We ran into a timeout - something with the web not working currently...
+        time.sleep(30)
 enricher.write_series_csv()
-print('Finished enriching data')
+print('Finished enriching data - had {} successes in {} items'.format(successes, len(tvhd_programs)))
 
 
 # We can now save all this to disk
