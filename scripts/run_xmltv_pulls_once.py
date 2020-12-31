@@ -61,7 +61,8 @@ while idx < len(tvhd_programs):
         if success:
             successes += 1
         idx += 1
-    except requests.exceptions.ReadTimeout:
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError) as e:
+        print('\n\n\nRan into error {}. Retrying\n\n\n'.format(e))
         # We ran into a timeout - something with the web not working currently...
         time.sleep(30)
 enricher.write_series_csv()
