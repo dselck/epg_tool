@@ -29,7 +29,7 @@ enricher = epg_tool.enricher(cachedir)
 # Pull the files that we are going to need
 print('Pulling Files')
 internet_programs, internet_channels, internet_df = epg_tool.parse_xml(internet_url)
-tvhd_programs, tvhd_channels, tvhd_df = epg_tool.parse_xml(tvheadend_url)
+tvhd_programs, tvhd_channels, _ = epg_tool.parse_xml(tvheadend_url)
 print('Finished Pulling Files')
 
 # Fix the channels for tvhd to match internet
@@ -41,11 +41,11 @@ print('Finished Fixing Channels')
 
 # Pull the data from the internet programs (bad times) to the local times
 print('Adding internet xmltv data to EIT data')
-tvhd_programs = epg_tool.match_headend_to_internet(tvhd_programs,
-                                                   internet_programs,
-                                                   internet_channels,
-                                                   internet_df)
-print('Finished adding internet xmltv data to EIT data')
+tvhd_programs, matches = epg_tool.match_headend_to_internet(tvhd_programs,
+                                                            internet_programs,
+                                                            internet_channels,
+                                                            internet_df)
+print('Updated {} programs of {}'.format(len(matches), len(tvhd_programs)))
 
 # Now we can enrich all of the data!
 print('Enriching data')

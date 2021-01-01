@@ -203,4 +203,4 @@ def match_headend_to_internet(tvhd_programs, internet_programs, internet_channel
             tvhd_programs[i] = __int_prog_to_eit(p, internet_programs[idx])
             continue
 
-    return (tvhd_programs, len(matches))
+    return (tvhd_programs, matches)
