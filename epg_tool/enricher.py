@@ -253,6 +253,9 @@ class enricher_tmdb:
         return (program, success)
 
     def update_movie_program(self, program, tmdb_id=None):
+        # Make sure there is no episode_num. that is how plex figures it all out
+        program.episode_num = None
+
         if tmdb_id is None:
             # We need to find it ourselves
             tmdb_id = self.get_movie_id(program)

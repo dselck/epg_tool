@@ -48,7 +48,6 @@ if __name__ == '__main__':
         # Pull the data from the internet programs (bad times) to the local times
         print('Adding internet xmltv data to EIT data')
         tvhd_programs = epg_tool.match_headend_to_internet(tvhd_programs,
-                                                           tvhd_channels,
                                                            internet_programs,
                                                            internet_channels,
                                                            internet_df)
@@ -58,14 +57,17 @@ if __name__ == '__main__':
         print('Enriching data')
         idx = 0
         successes = 0
+        progs_to_write = []
         while idx < len(tvhd_programs):
             if idx % 100 == 0:
                 print('Finished enriching {} of {} programs'.format(idx, len(tvhd_programs)))
             try:
-                if tvhd_df.iloc[idx].Is_Movie:
-                    tvhd_programs[idx], success = enricher.update_movie_program(tvhd_programs[idx])
+                if tvhd_programs[idx].is_movie:
+                    ret_prog, success = enricher.update_movie_program(tvhd_programs[idx])
                 else:
-                    tvhd_programs[idx], success = enricher.update_series_program(tvhd_programs[idx])
+                    ret_prog, success = enricher.update_series_program(tvhd_programs[idx])
+
+                progs_to_write.append(ret_prog)
                 if success:
                     successes += 1
                 idx += 1

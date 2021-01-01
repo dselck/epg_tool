@@ -107,6 +107,8 @@ class program:
             etree.SubElement(program, 'icon', src=self.icon)
         if self.episode_num is not None:
             etree.SubElement(program, 'episode-num', system='xmltv_ns').text = self.episode_num
+        if self.imdb_id is not None:
+            etree.SubElement(program, 'episode-num', system='imdb.com').text = self.imdb_id
         if self.previously_shown:
             etree.SubElement(program, 'previously-shown')
         if self.ratings is not None:
@@ -117,3 +119,10 @@ class program:
             etree.SubElement(program, 'premiere')
 
         return program
+
+    def is_movie(self):
+        if self.title[:7].lower() == 'movie: ':
+            return True
+        for cat in self.categories:
+            if 'movie' in cat.lower():
+                return True

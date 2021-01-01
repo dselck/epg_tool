@@ -45,23 +45,23 @@ class TestEnricher():
 
         assert id0 == id1 == 71739
 
-#    def test_get_series_info(self):
-#        print('Starting test_get_series_info')
-#        assert not os.path.isfile(self.cache + '/71739.json')
-#        data = self.enricher.__get_series_info(71739)
-#        assert os.path.isfile(self.cache + '/71739.json')
+    # def test_get_series_info(self):
+    #     print('Starting test_get_series_info')
+    #     assert not os.path.isfile(self.cache + '/71739.json')
+    #     data = self.enricher.__get_series_info(71739)
+    #     assert os.path.isfile(self.cache + '/71739.json')
 
-#        assert data['first_air_date'] == '2017-10-01'
-#        assert data['name'] == 'Ghosted'
+    #     assert data['first_air_date'] == '2017-10-01'
+    #     assert data['name'] == 'Ghosted'
 
-#    def test_get_episode_info(self):
-#        print('Starting test_get_episode_info')
-#        assert not os.path.isfile(self.cache + '/71739_episode_info.json')
-#        data = self.enricher.__get_episode_info(71739)
-#        assert os.path.isfile(self.cache + '/71739_episode_info.json')
+    # def test_get_episode_info(self):
+    #     print('Starting test_get_episode_info')
+    #     assert not os.path.isfile(self.cache + '/71739_episode_info.json')
+    #     data = self.enricher.__get_episode_info(71739)
+    #     assert os.path.isfile(self.cache + '/71739_episode_info.json')
 
-#        assert data[-1]['id'] == 1516974
-#        assert data[-1]['episode_number'] == 16
+    #     assert data[-1]['id'] == 1516974
+    #     assert data[-1]['episode_number'] == 16
 
     def test_update_series_program_info(self):
         tmdb.API_KEY = os.getenv('MOVIEDB_KEY')
@@ -74,7 +74,7 @@ class TestEnricher():
         p1u, _ = self.enricher.update_series_program(p1)
         p1u_1, _ = self.enricher.update_series_program(p1, tmdb_id=71739)
 
-#        assert len(self.enricher.series_df) == 2
+        # assert len(self.enricher.series_df) == 2
         assert p0u.sub_title == p1u.sub_title == p0u_1.sub_title == p1u_1.sub_title
 
         assert os.path.isfile(self.cache + '/71739.json')
