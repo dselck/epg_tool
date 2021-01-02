@@ -20,5 +20,5 @@ setup(
     packages=['epg_tool'],
     python_requires='>3.4',
     install_requires=install_requires,
-    scripts=['scripts/run_scheduled_xmltv_pulls.py', 'scripts/run_xmltv_pulls_once.py']
+    scripts=['scripts/run_scheduled_xmltv_pulls', 'scripts/run_xmltv_pulls_once']
 )
