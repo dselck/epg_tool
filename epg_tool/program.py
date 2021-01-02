@@ -5,7 +5,8 @@ class program:
 
     def __init__(self, title=None, start=None, stop=None, channel=None, sub_title=None, 
                  description=None, previously_shown=None, ratings=None, episode_num=None, 
-                 categories=None, premiere=False, tz=None, icon=None, imdb_id=None, date=None):
+                 categories=None, premiere=False, tz=None, icon=None, imdb_id=None, 
+                 date=None, airdate=None):
         self.title = title
         self.start = start
         self.stop = stop
@@ -21,6 +22,7 @@ class program:
         self.icon = icon
         self.imdb_id = imdb_id
         self.date = date  # This is specifically for movies
+        self.airdate = airdate
 
     def parse_xml(self, program):
         # start & timezone
@@ -110,6 +112,8 @@ class program:
             etree.SubElement(program, 'icon', src=self.icon)
         if self.episode_num is not None:
             etree.SubElement(program, 'episode-num', system='xmltv_ns').text = self.episode_num
+        if self.airdate is not None:
+            etree.SubElement(program, 'episode-num', system='original-air-date').text = self.airdate
         if self.previously_shown:
             etree.SubElement(program, 'previously-shown')
         if self.ratings is not None:

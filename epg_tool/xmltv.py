@@ -83,8 +83,7 @@ def transfer_channel_ids(to_channels, to_programs, from_channels):
                 # Success!
                 found = True
                 ch_mapping[to_ch.id] = from_ch.id
-                to_ch.id = from_ch.id
-                return_channels[to_ch.id] = to_ch
+                return_channels[to_ch.id] = from_ch
         if not found:
             return_channels[to_ch.id] = to_ch
 

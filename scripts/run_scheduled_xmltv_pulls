@@ -16,40 +16,45 @@ if __name__ == '__main__':
         print('Not all environment variables set properly')
         sys.exit(2)
 
-    # Collect the Variables
+   # Collect the Variables
     data_vol = os.getenv('DATA_VOLUME')
     apikey = os.getenv('MOVIEDB_KEY')
-    cachedir = os.path.join(data_vol, 'tv_cache')
+    movie_cachedir = os.path.join(data_vol, 'tv_cache', 'tmdb')
+    tv_cachedir = os.path.join(data_vol, 'tv_cache', 'tvmaze')
     internet_url = os.getenv('XMLTV_URL')
     xmltv_save = os.path.join(data_vol, 'xmltv.xml')
     tvheadend_url = os.getenv('TVHEADEND_URL')
 
     # Make sure we have the directory we need to do the job
-    if not os.path.isdir(cachedir):
-        os.mkdir(cachedir)
+    os.makedirs(movie_cachedir, exist_ok=True)
+    os.makedirs(tv_cachedir, exist_ok=True)
 
     def job():
+        # Do some setup
         tmdb.API_KEY = apikey
-        enricher = epg_tool.enricher(cachedir)
+        movie_enricher = epg_tool.TMDBEnricher(movie_cachedir)
+        tv_enricher = epg_tool.TvMazeEnricher(tv_cachedir)
 
         # Pull the files that we are going to need
-        print('Pulling Files')
+        tic = time.perf_counter()
         internet_programs, internet_channels, internet_df = epg_tool.parse_xml(internet_url)
         tvhd_programs, tvhd_channels, _ = epg_tool.parse_xml(tvheadend_url)
-        print('Finished Pulling Files')
+        toc = time.perf_counter()
+        print('Finished pulling files in {} seconds'.format(toc-tic))
 
         # Fix the channels for tvhd to match internet
-        print('Fixing Channels')
-        tvhd_channels, tvhd_programs = epg_tool.transfer_channel_ids(tvhd_channels, tvhd_programs, internet_channels)
-        print('Finished Fixing Channels')
+        tvhd_channels, tvhd_programs  = epg_tool.transfer_channel_ids(tvhd_channels, 
+                                                                    tvhd_programs, 
+                                                                    internet_channels)
 
         # Pull the data from the internet programs (bad times) to the local times
-        print('Adding internet xmltv data to EIT data')
+        tic = time.perf_counter()
         tvhd_programs, matches = epg_tool.match_headend_to_internet(tvhd_programs,
                                                                     internet_programs,
                                                                     internet_channels,
                                                                     internet_df)
-        print('Updated {} programs of {}'.format(len(matches), len(tvhd_programs)))
+        toc = time.perf_counter()
+        print('Matched {} programs of {} possibles in {} seconds'.format(len(matches), len(tvhd_programs), toc-tic))
 
         # Now we can enrich all of the data!
         print('Enriching data')
@@ -61,9 +66,10 @@ if __name__ == '__main__':
                 print('Finished enriching {} of {} programs'.format(idx, len(tvhd_programs)))
             try:
                 if tvhd_programs[idx].is_movie():
-                    ret_prog, success = enricher.update_movie_program(tvhd_programs[idx])
+                    ret_prog, success = movie_enricher.update_movie_program(tvhd_programs[idx])
                 else:
-                    ret_prog, success = enricher.update_series_program(tvhd_programs[idx])
+                    ret_prog, success = tv_enricher.update_series_program(tvhd_programs[idx])
+                    ret_prog = tv_enricher.embed_stubbed_episode_info(ret_prog)  # to ensure it exists
 
                 progs_to_write.append(ret_prog)
                 if success:
@@ -73,12 +79,14 @@ if __name__ == '__main__':
                 print('\n\n\nRan into error {}. Retrying\n\n\n'.format(e))
                 # We ran into a timeout - something with the web not working currently...
                 time.sleep(30)
-        enricher.write_series_csv()
-        print('Finished enriching data - had {} successes in {} items'.format(successes, len(tvhd_programs)))
+        tv_enricher.write_series_csv()
+        print('Enriched {} of {} possible programs in {} seconds'.format(successes, 
+                                                                        len(tvhd_programs),
+                                                                        toc-tic))
 
 
         # We can now save all this to disk
-        epg_tool.write_xml(tvhd_programs, tvhd_channels, xmltv_save)
+        epg_tool.write_xml(progs_to_write, tvhd_channels, xmltv_save)
         print('File saved to disk')
 
     schedule.every().day.at("08:00").do(job)
