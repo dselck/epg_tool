@@ -449,7 +449,8 @@ class TvMazeEnricher(GenericEnricher):
         for ep in episode_info:
             sub_titles.append(ep['name'])
             desc = ep['summary']
-            desc.replace('<p>', '').replace('</p>', '')
+            if desc:
+                desc.replace('<p>', '').replace('</p>', '')
             descriptions.append(desc)
 
         # Then see if we can find a good index
