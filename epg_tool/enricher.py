@@ -270,9 +270,9 @@ class enricher_tmdb:
         if movie_info:
             if movie_info['overview']:
                 program.description = movie_info['overview']
-            if movie_info['title'] and movie_info['release_date']:
-                program.title = '{}_({})'.format(movie_info['title'], movie_info['release_date'].split('-')[0])
-            elif movie_info['title']:
+            if movie_info['release_date']:
+                program.date = '{}'.format(movie_info['release_date'].split('-')[0])
+            if movie_info['title']:
                 program.title = movie_info['title']
             if movie_info['genres']:
                 program.categories = []
