@@ -420,7 +420,7 @@ class TvMazeEnricher(GenericEnricher):
             program.episode_num = '{}.'.format(ep_info['season'])
         if replace_subtitle:
             program.sub_title = ep_info['name']
-        if ep_info['air_date']:
+        if 'air_date' in ep_info and ep_info['air_date']:
             program.airdate = datetime.datetime.strptime(ep_info['air_date'], '%Y-%m-%d')
         
         return program
