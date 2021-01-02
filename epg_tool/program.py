@@ -124,9 +124,10 @@ class program:
     def is_movie(self):
         if self.title[:7].lower() == 'movie: ':
             return True
-        for cat in self.categories:
-            if 'movie' in cat.lower():
-                return True
+        if self.categories:
+            for cat in self.categories:
+                if 'movie' in cat.lower():
+                    return True
 
         # We didn't find anything indicating this is a movie
         return False
