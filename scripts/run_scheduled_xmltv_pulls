@@ -24,6 +24,10 @@ if __name__ == '__main__':
     xmltv_save = os.path.join(data_vol, 'xmltv.xml')
     tvheadend_url = os.getenv('TVHEADEND_URL')
 
+    # Make sure we have the directory we need to do the job
+    if not os.path.isdir(cachedir):
+        os.mkdir(cachedir)
+
     def job():
         tmdb.API_KEY = apikey
         enricher = epg_tool.enricher(cachedir)
