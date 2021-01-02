@@ -126,3 +126,6 @@ class program:
         for cat in self.categories:
             if 'movie' in cat.lower():
                 return True
+                
+        # We didn't find anything indicating this is a movie
+        return False
