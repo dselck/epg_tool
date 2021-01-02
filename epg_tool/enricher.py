@@ -280,6 +280,10 @@ class TMDBEnricher(GenericEnricher):
 
         # Then try and find the episode. First get the episode information.
         episode_info = self.get_episode_info(tmdb_id)
+        if not episode_info:
+            episode_info = self.get_episode_info(tmdb_id, force_update=True)
+            if not episode_info:
+                return (program, False)
 
         # First parse the episode_info to get the bits that we need
         sub_titles   = []
@@ -442,6 +446,10 @@ class TvMazeEnricher(GenericEnricher):
 
         # Then try and find the episode. First get the episode information.
         episode_info = self.get_episode_info(tvmaze_id)
+        if not episode_info:
+            episode_info = self.get_episode_info(tvmaze_id, force_update=True)
+            if not episode_info:
+                return (program, False)
 
         # First parse the episode_info to get the bits that we need
         sub_titles   = []
