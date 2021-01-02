@@ -60,7 +60,7 @@ if __name__ == '__main__':
             if idx % 100 == 0:
                 print('Finished enriching {} of {} programs'.format(idx, len(tvhd_programs)))
             try:
-                if tvhd_programs[idx].is_movie:
+                if tvhd_programs[idx].is_movie():
                     ret_prog, success = enricher.update_movie_program(tvhd_programs[idx])
                 else:
                     ret_prog, success = enricher.update_series_program(tvhd_programs[idx])
