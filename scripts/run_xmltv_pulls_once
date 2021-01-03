@@ -30,7 +30,7 @@ os.makedirs(tv_cachedir, exist_ok=True)
 # Do some setup
 tmdb.API_KEY = apikey
 movie_enricher = epg_tool.TMDBEnricher(movie_cachedir)
-tv_enricher = epg_tool.TvMazeEnricher(tv_cachedir)
+# tv_enricher = epg_tool.TvMazeEnricher(tv_cachedir)
 
 # Pull the files that we are going to need
 tic = time.perf_counter()
@@ -65,8 +65,8 @@ while idx < len(tvhd_programs):
         if tvhd_programs[idx].is_movie():
             ret_prog, success = movie_enricher.update_movie_program(tvhd_programs[idx])
         else:
-            ret_prog, success = tv_enricher.update_series_program(tvhd_programs[idx])
-            ret_prog = tv_enricher.embed_stubbed_episode_info(ret_prog)  # to ensure it exists
+            ret_prog, success = movie_enricher.update_series_program(tvhd_programs[idx])
+            ret_prog = movie_enricher.embed_stubbed_episode_info(ret_prog)  # to ensure it exists
 
         progs_to_write.append(ret_prog)
         if success:
@@ -76,7 +76,7 @@ while idx < len(tvhd_programs):
         print('\n\n\nRan into error {}. Retrying\n\n\n'.format(e))
         # We ran into a timeout - something with the web not working currently...
         time.sleep(30)
-tv_enricher.write_series_csv()
+movie_enricher.write_series_csv()
 print('Enriched {} of {} possible programs in {} seconds'.format(successes, 
                                                                  len(tvhd_programs),
                                                                  toc-tic))
